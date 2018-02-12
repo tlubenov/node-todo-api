@@ -20,6 +20,16 @@ app.post('/todos', (req, res) => {
     console.log(todo);
 });
 
+app.get('/todos', (req, res) => {
+    ToDo.find().then((todos) => {
+        res.send({todos: todos});
+    }, (e) => {
+        res.status(400).send(e);
+    });
+});
+
+
+
 
 
 var port = process.env.PORT || 3500;
