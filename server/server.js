@@ -1,31 +1,56 @@
-var mongoose = require('mongoose');
+var express = require('express');
+var bodyParser = require('body-parser');
 
-mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/TodoApp');
+var {mongoose} = require('./db/mongoose');
+var {ToDo} = require('./models/todo');
+var {User} = require('./models/user');
 
-var ToDoSchema = mongoose.Schema({
-    text: String,
-    completed: Boolean,
-    completedAt: Number
-});
-var ToDo = mongoose.model('Todo', ToDoSchema);
+var app = express();
+app.use(bodyParser.json());
 
-var User = mongoose.model('User', {
-    firstName: String,
-    lastName: String,
-    email: String,
-    position: String
-});
-
-
-var newTodo = new ToDo({
-    text: 'test',
-    completed: false,
-    completedAt: 1234
+app.post('/todos', (req, res) => {
+    var todo = new ToDo({
+        text: req.body.text
+    });
+    todo.save().then((doc) => {
+        res.status(201).send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
+    console.log(todo);
 });
 
-newTodo.save().then((doc) => {
-    console.log('Save as ', doc);
-}, (e) => {
-    console.log(e.message);
+
+
+var port = process.env.PORT || 3500;
+app.listen(port, () => {
+    console.log('Server listening on port: ', port)
 });
+
+module.exports = {
+    app: app
+}
+
+
+
+// var newUser = new User({
+//     firstName: '      Todor      ',
+//     email: '      test@mail.bg         '
+// });
+
+// newUser.save().then((doc) => {
+//     console.log('Save as ', doc);
+// }, (e) => {
+//     console.log(e.message);
+// });
+
+// var newTodo = new ToDo({
+//     text: 'To Do something',
+//     completedAt: 1234
+// });
+
+// newTodo.save().then((doc) => {
+//     console.log('Save as ', doc);
+// }, (e) => {
+//     console.log(e.message);
+// });
